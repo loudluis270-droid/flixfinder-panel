@@ -1,0 +1,100 @@
+painel.html
+<!DOCTYPE html><html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>FlixFinder - Painel de Controle de Keys</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #0b0f1a; }
+  </style>
+</head>
+<body class="text-white min-h-screen flex">  <!-- Sidebar -->  <aside class="w-64 bg-[#0f1629] p-6 space-y-6">
+    <h1 class="text-2xl font-bold text-purple-400">FlixFinder</h1>
+    <nav class="space-y-3">
+      <button class="w-full text-left hover:text-purple-400">Dashboard</button>
+      <button class="w-full text-left hover:text-purple-400">Keys</button>
+      <button class="w-full text-left hover:text-purple-400">Usuários</button>
+      <button class="w-full text-left hover:text-purple-400">Estatísticas</button>
+      <button class="w-full text-left hover:text-purple-400">Configurações</button>
+    </nav>
+  </aside>  <!-- Main -->  <main class="flex-1 p-8"><div class="flex justify-between items-center mb-6">
+  <h2 class="text-3xl font-semibold">Controle de Keys</h2>
+  <div class="space-x-3">
+    <button onclick="generateKey('normal')" class="bg-blue-600 px-4 py-2 rounded-xl">Gerar Key Normal</button>
+    <button onclick="generateKey('vip')" class="bg-purple-600 px-4 py-2 rounded-xl">Gerar Key VIP</button>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="bg-[#121a33] rounded-2xl overflow-hidden shadow-lg">
+  <table class="w-full text-left">
+    <thead class="bg-[#1b2550]">
+      <tr>
+        <th class="p-3">Key</th>
+        <th class="p-3">Tipo</th>
+        <th class="p-3">Status</th>
+        <th class="p-3">Dispositivo</th>
+        <th class="p-3">Último Acesso</th>
+        <th class="p-3">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="keyTable"></tbody>
+  </table>
+</div>
+
+  </main><script>
+  const keys = [];
+
+  function randomCode(prefix) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = prefix + '-';
+    for (let i = 0; i < 4; i++) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return code;
+  }
+
+  function generateKey(type) {
+    const key = {
+      code: randomCode(type === 'vip' ? 'VIP' : 'FLIX'),
+      type: type.toUpperCase(),
+      status: 'Ativa',
+      device: '-',
+      last: 'Nunca'
+    };
+    keys.push(key);
+    render();
+  }
+
+  function blockKey(index) {
+    keys[index].status = 'Bloqueada';
+    render();
+  }
+
+  function deleteKey(index) {
+    keys.splice(index, 1);
+    render();
+  }
+
+  function render() {
+    const table = document.getElementById('keyTable');
+    table.innerHTML = '';
+
+    keys.forEach((k, i) => {
+      table.innerHTML += `
+        <tr class="border-b border-gray-700">
+          <td class="p-3">${k.code}</td>
+          <td class="p-3">${k.type}</td>
+          <td class="p-3 ${k.status === 'Ativa' ? 'text-green-400' : 'text-red-400'}">${k.status}</td>
+          <td class="p-3">${k.device}</td>
+          <td class="p-3">${k.last}</td>
+          <td class="p-3 space-x-2">
+            <button onclick="blockKey(${i})" class="bg-yellow-600 px-2 py-1 rounded">Bloquear</button>
+            <button onclick="deleteKey(${i})" class="bg-red-600 px-2 py-1 rounded">Excluir</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+</script></body>
+</html>
